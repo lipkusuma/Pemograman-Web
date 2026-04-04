@@ -8,21 +8,20 @@ Penempatan file secara sengaja dipusatkan (*flat structure* pada root) untuk mem
 
 ```text
 Pemograman-Web/
-├── styles/                  # 🎨 Seluruh aset gaya tampilan (CSS)
-│   ├── auth.css             # Desain khusus untuk halaman Register & Login
-│   ├── dashboard.css        # Layout Grid/Sidebar untuk Admin & Katalog Utama
-│   └── global.css           # Desain pondasi (font, warna global, reset)
-├── index.html               # 🏠 Halaman pembuka (Landing Page utama)
-├── login.html               # 🔐 Halaman form Autentikasi (dilengkapi skrip Role admin/user)
-├── register.html            # 🔐 Halaman pendaftaran
-├── katalog.html             # 🛍️ Antarmuka List Produk Utama (Untuk Customer)
-├── transaksi.html           # 🛍️ Antarmuka Checkout dan Monitoring Order (Customer)
-├── dashboard.html           # 📊 Panel Admin (Chart Statistik, Tabel User Aktif)
-├── upload_foto.php          # ⚙️ TUGAS PHP: Skrip Handling Unggah Foto terintegrasi (Sidebar Profil)
-└── README.md                # 📄 Panduan dokumentasi
+├── assets/
+│   └── css/                 # 🎨 Seluruh aset gaya (global.css, auth.css, dashboard.css)
+├── pages/                   # 📂 Penempatan seluruh layout aplikasi & fungsi
+│   ├── login.html           # 🔐 Halaman Autentikasi Login (Simulasi Role)
+│   ├── register.html        # 🔐 Halaman Pendaftaran
+│   ├── katalog.html         # 🛍️ Antarmuka List Produk Utama (Customer)
+│   ├── transaksi.html       # 🛍️ Antarmuka Checkout dan Order (Customer)
+│   ├── dashboard.html       # 📊 Panel Admin (Tabel User, Chart)
+│   └── upload_foto.php      # ⚙️ Fitur Handling PHP (Diintegrasikan di Profil)
+├── index.html               # 🏠 Halaman pembuka (Landing Page utama) di Root
+└── README.md                # 📄 Panduan dokumentasi proyek
 ```
 
-*(Catatan: Direktori `uploads/` akan otomatis terbuat ketika fitur PHP dijalankan dengan sukses).*
+*(Catatan: Direktori `uploads/` akan otomatis terbentuk pada level root saat `upload_foto.php` berhasil dieksekusi dari sisi server).*
 
 ## 🚀 Cara Menjalankan
 

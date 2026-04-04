@@ -1,6 +1,6 @@
 <?php
 $pesan = '';
-$direktori_tujuan = 'uploads/';
+$direktori_tujuan = '../uploads/';
 
 // Cek apakah folder 'uploads' sudah ada, jika belum buat foldernya
 if (!is_dir($direktori_tujuan)) {
@@ -66,8 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil & Upload Foto</title>
     <!-- MENGHUBUNGKAN DENGAN CSS UTAMA WEB -->
-    <link rel="stylesheet" href="styles/global.css">
-    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/global.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
     <style>
         .upload-card { background: white; border-radius: 12px; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 600px; }
         .alert { padding: 15px; margin-bottom: 24px; border-radius: 6px; }
