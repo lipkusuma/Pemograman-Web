@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -49,8 +49,8 @@
                     </svg>
                 </div>
                 <ul class="nav-links">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="pages/katalog.html">Katalog</a></li>
+                    <li><a href="index.php">Home</a></li>
+                    <li><a href="pages/katalog.php">Katalog</a></li>
                     <li><a href="#">About</a></li>
                 </ul>
             </div>
@@ -72,7 +72,7 @@
                     <div class="hero-desc-line"></div>
                     <p>Lorem ipsum dolor sit amet,<br>consectetur adipiscing elit</p>
                 </div>
-                <a href="pages/login.html" class="btn btn-white">Login</a>
+                <a href="pages/login.php" class="btn btn-white">Login</a>
             </div>
         </main>
     </div>

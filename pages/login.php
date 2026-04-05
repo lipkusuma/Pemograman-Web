@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -61,7 +61,7 @@
                 </form>
 
                 <div class="auth-footer">
-                    Belum memiliki akun? <a href="register.html">Register</a>
+                    Belum memiliki akun? <a href="register.php">Register</a>
                 </div>
             </div>
 
@@ -82,11 +82,11 @@
             // Logika Sederhana: Jika namanya di-set "admin", masuk ke Dashboard
             if(username === 'admin') {
                 alert('Login sebagai Admin berhasil!');
-                window.location.href = 'dashboard.html';
+                window.location.href = 'dashboard.php';
             } else {
                 // Jika selain admin (sebagai customer), masuk ke Katalog
                 alert('Login sebagai Pembeli berhasil!');
-                window.location.href = 'katalog.html';
+                window.location.href = 'katalog.php';
             }
         });
     </script>
