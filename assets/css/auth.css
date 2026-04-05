@@ -11,10 +11,10 @@
     color: white;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start; /* Anchor ke atas agar tidak jumping */
     align-items: center;
     text-align: center;
-    padding: 40px;
+    padding: 25vh 40px 40px 40px; /* Jarak tetap dari atas */
     position: relative;
     overflow: hidden;
 }
@@ -56,9 +56,9 @@
     flex: 1.2;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start; /* Anchor ke atas formnya */
     align-items: center;
-    padding: 40px;
+    padding: 15vh 40px 40px 40px; /* Jarak dari atas konsisten di semua page */
     position: relative;
 }
 

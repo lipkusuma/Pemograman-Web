@@ -1,4 +1,6 @@
-﻿<?php
+<?php
+session_start();
+
 $pesan = '';
 $direktori_tujuan = '../uploads/';
 
@@ -47,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto'])) {
             // 4. Memindahkan file dan menyimpannya di direktori tujuan (File Upload Data)
             if (move_uploaded_file($lokasi_sementara, $path_tujuan)) {
                 $pesan = "<div class='alert success'>Berhasil! Foto tersimpan dengan nama: <strong>$nama_file_baru</strong></div>";
+                $_SESSION['profile_pic'] = $nama_file_baru;
             } else {
                 $pesan = "<div class='alert error'>Gagal menyimpan gambar di direktori tujuan.</div>";
             }

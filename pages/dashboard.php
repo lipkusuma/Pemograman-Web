@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -61,6 +62,13 @@
                     </div>
                     <div class="action-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <div class="profile-circle">
+                        <?php if(isset($_SESSION['profile_pic']) && !empty($_SESSION['profile_pic'])): ?>
+                            <img src="../uploads/<?php echo htmlspecialchars($_SESSION['profile_pic']); ?>" alt="Profile" style="width:100%; height:100%; object-fit:cover;">
+                        <?php else: ?>
+                            <!-- Default avatar placeholder -->
+                        <?php endif; ?>
                     </div>
                 </div>
             </header>

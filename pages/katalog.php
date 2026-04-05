@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+<?php session_start(); ?>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -59,7 +60,11 @@
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                     </div>
                     <div class="profile-circle">
-                        <!-- Default avatar placeholder -->
+                        <?php if(isset($_SESSION['profile_pic']) && !empty($_SESSION['profile_pic'])): ?>
+                            <img src="../uploads/<?php echo htmlspecialchars($_SESSION['profile_pic']); ?>" alt="Profile" style="width:100%; height:100%; object-fit:cover;">
+                        <?php else: ?>
+                            <!-- Default avatar placeholder -->
+                        <?php endif; ?>
                     </div>
                 </div>
             </header>

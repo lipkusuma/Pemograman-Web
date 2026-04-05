@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $error = "";
 $success = "";
 
@@ -15,61 +15,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($username) || empty($email) || empty($phone) || empty($password) || empty($confirm_password)) {
         $error = "Semua kolom wajib diisi!";
     } elseif ($password !== $confirm_password) {
-        // Validasi jika konfirmasi password salah
         $error = "Password dan Konfirmasi Password tidak cocok!";
+    } elseif (!preg_match('/@gmail\.com$/i', $email)) {
+        $error = "Format email harus menggunakan @gmail.com!";
+    } elseif (!preg_match('/^[a-zA-Z0-9\_]{3,20}$/', $username)) {
+        $error = "Username hanya boleh berisi huruf, angka, dan underscore (3-20 karakter)!";
+    } elseif (!preg_match('/^[0-9]{10,15}$/', $phone)) {
+        $error = "Nomor handphone harus berupa angka (10-15 digit)!";
     } else {
-        // --- FILE HANDLING UNTUK FOTO PROFIL ---
+        $success = "Pendaftaran berhasil! Silakan ke halaman Profil untuk melengkapi foto.";
         
-        // Memeriksa apakah ada file yang diunggah tanpa error
-        if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === UPLOAD_ERR_OK) {
-            $fileTmpPath = $_FILES['profile_pic']['tmp_name'];
-            $fileName = $_FILES['profile_pic']['name'];
-            $fileSize = $_FILES['profile_pic']['size'];
-            
-            // Mendapatkan ekstensi file
-            $fileNameCmps = explode(".", $fileName);
-            $fileExtension = strtolower(end($fileNameCmps));
-
-            $allowedfileExtensions = array('jpg', 'jpeg', 'png');
-
-            // Cek apakah tipenya gambar yang diperbolehkan
-            if (in_array($fileExtension, $allowedfileExtensions)) {
-                // Maksimal ukuran 2MB (2.000.000 byte)
-                if ($fileSize < 2000000) {
-                    
-                    // Folder upload tujuan
-                    $uploadFileDir = '../uploads/';
-                    
-                    // Kalau folder upload belum ada, buat foldernya otomatis
-                    if(!is_dir($uploadFileDir)){
-                         mkdir($uploadFileDir, 0755, true);
-                    }
-
-                    // Trik agar nama file tidak bentrok: hash(waktu + nama asli)
-                    $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
-                    $dest_path = $uploadFileDir . $newFileName;
-
-                    // Pindahkan file dari server temporary ke folder uploads milik kita
-                    if (move_uploaded_file($fileTmpPath, $dest_path)) {
-                        $success = "Pendaftaran berhasil! Foto profil {$fileName} sudah tersimpan.";
-                        
-                        // Di dunia nyata, di sini biasanya kita menjalankan logika MySQL:
-                        // INSERT INTO users (username, email, phone, password, profile_pic) VALUES (...)
-                        
-                        // Kosongkan form karena sudah berhasil
-                        $username = $email = $phone = "";
-                    } else {
-                        $error = "Terjadi kesalahan saat menyimpan gambar.";
-                    }
-                } else {
-                    $error = "Ukuran file terlalu besar! Maksimal 2MB.";
-                }
-            } else {
-                $error = "Upload gagal. Kami hanya menerima ekstensi: JPG, JPEG, PNG.";
-            }
-        } else {
-            $error = "Harap pilih foto profil kamu!";
-        }
+        // Di dunia nyata, di sini biasanya kita menjalankan logika MySQL:
+        // INSERT INTO users (username, email, phone, password) VALUES (...)
+        
+        // Kosongkan form karena sudah berhasil
+        $username = $email = $phone = "";
     }
 }
 ?>
@@ -86,12 +46,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .alert { padding: 12px; border-radius: 6px; margin-bottom: 20px; font-weight: 500; font-size: 0.9rem;}
         .alert-error { background-color: #fee2e2; color: #b91c1c; border: 1px solid #f87171; }
         .alert-success { background-color: #dcfce7; color: #15803d; border: 1px solid #4ade80; }
-        
-        /* Styling Custom Input Foto */
-        .file-upload-wrapper { margin-bottom: 1rem; width: 100%;}
-        .file-upload-label { display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 5px; font-weight: 600;}
-        .file-upload-input { width: 100%; padding: 10px; border: 2px dashed #cbd5e1; border-radius: 8px; background: #f8fafc; color: #475569; cursor: pointer; transition: all 0.2s;}
-        .file-upload-input:hover { border-color: #38bdf8; background: #f0f9ff;}
     </style>
 </head>
 <body>
@@ -128,22 +82,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="alert alert-success"> âœ… <?php echo htmlspecialchars($success); ?> </div>
                 <?php endif; ?>
 
-                <!-- Form sekarang mengarah ke dirinya sendiri (register.php) dan tipe form harus multipart untuk upload file -->
-                <form action="register.php" method="POST" enctype="multipart/form-data">
+                <!-- Form sekarang mengarah ke dirinya sendiri (register.php) -->
+                <form action="register.php" method="POST">
                     <div class="input-group">
                         <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                         <!-- Menambahkan Atribut name="" dan mempertahankan value jika ada error -->
-                        <input type="text" name="username" placeholder="Username" value="<?php echo htmlspecialchars($username ?? ''); ?>" required>
+                        <input type="text" name="username" placeholder="Username" pattern="^[a-zA-Z0-9_]{3,20}$" title="Username hanya boleh huruf, angka, underscore (3-20 karakter)" value="<?php echo htmlspecialchars($username ?? ''); ?>" required>
                     </div>
 
                     <div class="input-group">
                         <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        <input type="email" name="email" placeholder="Email" value="<?php echo htmlspecialchars($email ?? ''); ?>" required>
+                        <input type="email" name="email" placeholder="Email" pattern=".*@gmail\.com$" title="Gunakan email berakhiran @gmail.com" value="<?php echo htmlspecialchars($email ?? ''); ?>" required>
                     </div>
 
                     <div class="input-group">
                         <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                        <input type="tel" name="phone" placeholder="Nomor Handphone" value="<?php echo htmlspecialchars($phone ?? ''); ?>" required>
+                        <input type="tel" name="phone" placeholder="Nomor Handphone" pattern="^[0-9]{10,15}$" title="Nomor handphone harus berupa angka (10-15 digit)" value="<?php echo htmlspecialchars($phone ?? ''); ?>" required>
                     </div>
 
                     <div class="input-group">
@@ -156,12 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <input type="password" name="confirm_password" placeholder="Confirm Password" required>
                     </div>
 
-                    <!-- Input FILE untuk Foto Profil -->
-                    <div class="file-upload-wrapper">
-                        <label class="file-upload-label">Silakan Upload Foto Profil:</label>
-                        <input type="file" name="profile_pic" class="file-upload-input" accept="image/png, image/jpeg, image/jpg" required>
-                    </div>
-                    
+
                     <button type="submit" class="btn btn-auth">Register</button>
                 </form>
 

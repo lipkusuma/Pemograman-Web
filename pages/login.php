@@ -1,4 +1,31 @@
-﻿<!DOCTYPE html>
+<?php
+session_start();
+
+$error = "";
+
+// Handle form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = trim($_POST['username'] ?? '');
+    $password = $_POST['password'] ?? '';
+
+    // Simulasi Database Sederhana
+    if ($username === 'admin' && $password === 'admin123') {
+        $_SESSION['username'] = $username;
+        $_SESSION['role'] = 'admin';
+        header("Location: dashboard.php");
+        exit();
+    } elseif ($username !== '' && $password !== '') {
+        // Untuk user biasa/pembeli
+        $_SESSION['username'] = $username;
+        $_SESSION['role'] = 'user';
+        header("Location: katalog.php");
+        exit();
+    } else {
+        $error = "Username dan Password wajib diisi!";
+    }
+}
+?>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -33,15 +60,21 @@
                 <h2 class="auth-title">Login</h2>
                 <p class="mobile-subtitle">Please enter your e-mail and password for verification</p>
 
-                <form id="loginForm">
+                <?php if(!empty($error)): ?>
+                    <div style="background-color: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 6px; margin-bottom: 20px; text-align: center; font-weight: 500; font-size: 0.9rem;">
+                        ⚠️ <?php echo htmlspecialchars($error); ?>
+                    </div>
+                <?php endif; ?>
+
+                <form action="login.php" method="POST">
                     <div class="input-group">
                         <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <input type="text" id="usernameInput" placeholder="Username" required>
+                        <input type="text" name="username" placeholder="Username" required>
                     </div>
 
                     <div class="input-group">
                         <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        <input type="password" placeholder="Password" required>
+                        <input type="password" name="password" placeholder="Password" required>
                         <svg class="input-icon-right" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                     </div>
 
@@ -70,25 +103,5 @@
                 <path d="M0,150 C150,50 350,150 500,50 L500,0 L0,0 Z" />
             </svg>
         </div>
-    </div>
-
-    <!-- Script simulasi Login Role -->
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault(); // Mencegah form memuat ulang halaman secara bawaan
-            
-            const username = document.getElementById('usernameInput').value.toLowerCase();
-            
-            // Logika Sederhana: Jika namanya di-set "admin", masuk ke Dashboard
-            if(username === 'admin') {
-                alert('Login sebagai Admin berhasil!');
-                window.location.href = 'dashboard.php';
-            } else {
-                // Jika selain admin (sebagai customer), masuk ke Katalog
-                alert('Login sebagai Pembeli berhasil!');
-                window.location.href = 'katalog.php';
-            }
-        });
-    </script>
 </body>
 </html>
