@@ -2,7 +2,8 @@
 .auth-container {
     display: flex;
     min-height: 100vh;
-    background-color: #ffffff;
+    background-color: var(--card-bg);
+    transition: background-color 0.3s ease;
 }
 
 .auth-sidebar {
@@ -11,27 +12,12 @@
     color: white;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Anchor ke atas agar tidak jumping */
+    justify-content: flex-start;
     align-items: center;
     text-align: center;
-    padding: 25vh 40px 40px 40px; /* Jarak tetap dari atas */
+    padding: 25vh 40px 40px 40px;
     position: relative;
     overflow: hidden;
-}
-
-/* Background waves for desktop auth sidebar */
-.auth-sidebar-wave {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    opacity: 0.2;
-    z-index: 1;
-}
-
-.auth-sidebar-wave path {
-    fill: #ffffff;
 }
 
 .auth-sidebar-content {
@@ -56,9 +42,9 @@
     flex: 1.2;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Anchor ke atas formnya */
+    justify-content: flex-start;
     align-items: center;
-    padding: 15vh 40px 40px 40px; /* Jarak dari atas konsisten di semua page */
+    padding: 15vh 40px 40px 40px;
     position: relative;
 }
 
@@ -87,6 +73,7 @@
     color: var(--nav-text);
     text-align: center;
     margin-bottom: 32px;
+    transition: color 0.3s ease;
 }
 
 .mobile-subtitle {
@@ -108,14 +95,18 @@
     padding: 16px 16px 16px 48px;
     border: none;
     border-radius: 12px;
-    background-color: #f1f5f9;
+    background-color: var(--input-bg);
     font-size: 0.95rem;
     color: var(--text-main);
     transition: all 0.3s;
 }
 
+.input-group input::placeholder {
+    color: var(--text-muted);
+}
+
 .input-group input:focus {
-    background-color: #e2e8f0;
+    background-color: var(--border-color);
     outline: 2px solid #38bdf8;
 }
 
@@ -140,7 +131,7 @@
 .btn-auth {
     width: 100%;
     padding: 16px;
-    background-color: #2e303c; /* Dark grayish-blue from mockup */
+    background-color: #2e303c;
     color: white;
     border-radius: 12px;
     font-weight: 600;
@@ -148,6 +139,11 @@
     margin-top: 10px;
     margin-bottom: 24px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+body.dark .btn-auth {
+    background-color: #2563eb;
 }
 
 .btn-auth:hover {
@@ -155,52 +151,70 @@
     transform: translateY(-1px);
 }
 
-.social-login {
-    text-align: center;
-    margin-bottom: 24px;
+body.dark .btn-auth:hover {
+    background-color: #1d4ed8;
 }
 
-.social-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: all 0.3s;
-}
-
-.social-btn:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    transform: translateY(-2px);
-}
+.social-login { text-align: center; margin-bottom: 24px; }
+.social-btn { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: var(--card-bg); box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: all 0.3s; }
+.social-btn:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.15); transform: translateY(-2px); }
 
 .auth-footer {
     text-align: center;
     font-size: 0.9rem;
     color: var(--text-muted);
+    transition: color 0.3s ease;
 }
 
 .auth-footer a {
     color: var(--nav-text);
     font-weight: 700;
+    transition: color 0.3s ease;
+}
+
+/* Alert Styling */
+.alert { padding: 12px; border-radius: 6px; margin-bottom: 20px; font-weight: 500; font-size: 0.9rem; }
+.alert-error { background-color: #fee2e2; color: #b91c1c; border: 1px solid #f87171; }
+.alert-success { background-color: #dcfce7; color: #15803d; border: 1px solid #4ade80; }
+
+/* Dark Mode Toggle di Auth Page */
+.auth-dark-toggle {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 50;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-main);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.auth-dark-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 /* Responsiveness */
 @media (max-width: 768px) {
     .auth-sidebar {
-        display: none; /* Hide sidebar completely on mobile */
+        display: none;
     }
     
     .mobile-wave-top,
     .mobile-wave-bottom {
-        display: block; /* Show decorative waves */
+        display: block;
     }
     
     .mobile-subtitle {
-        display: block; /* Show subtitle on mobile form */
+        display: block;
     }
     
     .auth-title {

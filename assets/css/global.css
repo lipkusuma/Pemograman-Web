@@ -7,6 +7,30 @@
     --nav-text: #0f172a;
     --btn-bg: #f8fafc;
     --btn-text: #0f172a;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --input-bg: #f1f5f9;
+    --sidebar-bg: #0f172a;
+    --sidebar-hover: #1e293b;
+    --topbar-bg: #ffffff;
+    --page-bg: #f8fafc;
+}
+
+/* Dark Mode Variables */
+body.dark {
+    --bg-color: #0f172a;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --nav-text: #f1f5f9;
+    --btn-bg: #1e293b;
+    --btn-text: #f1f5f9;
+    --card-bg: #1e293b;
+    --border-color: #334155;
+    --input-bg: #334155;
+    --sidebar-bg: #020617;
+    --sidebar-hover: #0f172a;
+    --topbar-bg: #1e293b;
+    --page-bg: #0f172a;
 }
 
 * {
@@ -22,6 +46,7 @@ body {
     overflow-x: hidden;
     position: relative;
     min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 a {
@@ -141,7 +166,7 @@ button {
     font-weight: 800;
     line-height: 1.1;
     margin-bottom: 24px;
-    color: #000;
+    color: var(--text-main);
 }
 
 .hero-desc {
@@ -159,6 +184,16 @@ button {
     width: 48px;
     height: 1px;
     background-color: var(--text-muted);
+}
+
+/* Dark Mode Toggle Button */
+.dark-mode-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
 }
 
 /* Mobile Responsiveness */
