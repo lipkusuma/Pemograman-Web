@@ -1,31 +1,51 @@
-# Pemrograman Web
+# Pemrograman Web (Migrasi Laravel)
 
-Repository ini memuat proyek antarmuka website Katalog, Dashboard Admin, serta integrasi simulasi *Login* dan *File Upload* (PHP). Dibuat menggunakan paduan HTML, CSS murni, JavaScript untuk interaktivitas sisi klien (*client-side*), dan file PHP.
+Repository ini memuat proyek antarmuka website Katalog, Dashboard Admin, serta integrasi simulasi *Login* dan *File Upload* yang telah dimigrasi ke framework **Laravel**. Dibuat menggunakan Laravel, Blade Templates, dan CSS murni.
 
-## 📂 Struktur Direktori dan Penempatan
+## 📂 Struktur Direktori Setelah Migrasi Laravel
 
-Penempatan file secara sengaja dipusatkan (*flat structure* pada root) untuk mempermudah _routing_ saling silang antar tautan statis tipe `.html` tanpa menggunakan library bantuan (React/Next). Sehingga strukturnya rapi namun fungsional:
+Struktur direktori sekarang mengikuti standar struktur Laravel:
 
 ```text
 Pemograman-Web/
-├── assets/
-│   └── css/                 # 🎨 Seluruh aset gaya (global.css, auth.css, dashboard.css)
-├── pages/                   # 📂 Penempatan seluruh layout aplikasi & fungsi
-│   ├── login.html           # 🔐 Halaman Autentikasi Login (Simulasi Role)
-│   ├── register.html        # 🔐 Halaman Pendaftaran
-│   ├── katalog.html         # 🛍️ Antarmuka List Produk Utama (Customer)
-│   ├── transaksi.html       # 🛍️ Antarmuka Checkout dan Order (Customer)
-│   ├── dashboard.html       # 📊 Panel Admin (Tabel User, Chart)
-│   └── upload_foto.php      # ⚙️ Fitur Handling PHP (Diintegrasikan di Profil)
-├── index.html               # 🏠 Halaman pembuka (Landing Page utama) di Root
-└── README.md                # 📄 Panduan dokumentasi proyek
+├── app/                     # ⚙️ Logika inti aplikasi (Controllers, Middleware, Models, Providers)
+├── bootstrap/               # 🚀 Bootstrap file & routing cache
+├── config/                  # ⚙️ Konfigurasi aplikasi
+├── database/                # 🗄️ Migrasi database dan seeders
+├── public/                  # 🌐 Folder publik utama (CSS, JS, Uploads, index.php)
+│   ├── assets/              # 🎨 Aset gaya css & js
+│   └── uploads/             # 📂 Penyimpanan file terunggah
+├── resources/               # 🖥️ Tampilan Blade view dan aset mentah
+│   └── views/               # 📄 Halaman Blade (Home, Auth, Dashboard, Katalog, Transaksi, dll)
+├── routes/                  # 🛣️ File definisi rute web (routes/web.php)
+├── storage/                 # 📂 Penyimpanan sesi, cache, dan log
+└── composer.json            # 📄 File dependensi PHP Composer
 ```
-
-*(Catatan: Direktori `uploads/` akan otomatis terbentuk pada level root saat `upload_foto.php` berhasil dieksekusi dari sisi server).*
 
 ## 🚀 Cara Menjalankan
 
-Agar semua halaman (**terutama** form unggah file `.php` dan *routing* nya) berfungsi normal 100%:
-1. Jalankan aplikasi web server Anda (Contoh: modul *Apache* di XAMPP).
-2. Posisikan seluruh isi *repository* (folder `Pemograman-Web`) ini di dalam direktori server (contoh: `C:/xampp/htdocs/Pemograman-Web/`).
-3. Buka *browser* pilihan Anda dan akses alamat **`http://localhost/Pemograman-Web/index.html`**!
+Untuk menjalankan aplikasi ini secara lokal:
+1. Pastikan Anda sudah menginstal **PHP** (>= 8.2) dan **Composer**.
+2. Clone repository ini dan masuk ke dalam foldernya.
+3. Buat file `.env` dari `.env.example`:
+   ```bash
+   cp .env.example .env
+   ```
+4. Instal dependensi PHP menggunakan Composer:
+   ```bash
+   composer install
+   ```
+5. Buat key aplikasi baru:
+   ```bash
+   php artisan key:generate
+   ```
+6. Konfigurasikan koneksi database Anda di file `.env` (misal MySQL/SQLite).
+7. Jalankan migrasi database:
+   ```bash
+   php artisan migrate
+   ```
+8. Jalankan local development server:
+   ```bash
+   php artisan serve
+   ```
+9. Buka *browser* pilihan Anda dan akses alamat **`http://127.0.0.1:8000`**!
