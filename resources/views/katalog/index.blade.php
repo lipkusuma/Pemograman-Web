@@ -13,9 +13,17 @@
         <input type="text" placeholder="Search">
     </div>
     <div class="topbar-actions">
-        <div class="action-icon">
+        <a href="{{ route('cart.index') }}" class="action-icon" title="Keranjang" style="position: relative; display: inline-block;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-        </div>
+            @php
+                $cartCount = \App\Models\Cart::where('user_id', session('user_id'))->sum('qty');
+            @endphp
+            @if($cartCount > 0)
+                <span style="position: absolute; top: -8px; right: -8px; background-color: #ef4444; color: white; border-radius: 50%; font-size: 0.65rem; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                    {{ $cartCount }}
+                </span>
+            @endif
+        </a>
         <div class="action-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         </div>
@@ -51,21 +59,44 @@
     </div>
 
     <!-- Trending -->
-    <h3 class="section-title">Trending</h3>
+    <h3 class="section-title">Semua Produk</h3>
     <div class="products-grid">
-        @for($i = 0; $i < 4; $i++)
-        <div class="product-card">
-            <button class="favorite-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            </button>
-            <div class="product-image">
-                <div style="width: 80px; height: 120px; background: #cbd5e1; border-radius: 8px;"></div>
+        @foreach($products as $product)
+        <div class="product-card" style="display: flex; flex-direction: column;">
+            <div class="product-image" style="background-color: var(--input-bg); border-radius: 8px; height: 140px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">
+                @if($product->category == 'Tenda') ⛺
+                @elseif($product->category == 'Tas') 🎒
+                @elseif($product->category == 'Alat Pribadi') 🥾
+                @elseif($product->category == 'Alat Masak') 🍳
+                @elseif($product->category == 'Penerangan') 💡
+                @else 📦
+                @endif
             </div>
-            <div class="product-footer">
-                <div><div class="product-title">VALENCIA<br>JACKET</div></div>
-                <div class="product-price"><span class="price-currency">$</span>110<div style="font-size: 0.75rem; margin-top:2px;">.00</div></div>
+            <div class="product-title" style="margin-top: 12px; font-weight: 700; font-size: 0.95rem; min-height: 40px; color: var(--text-main);">
+                {{ $product->name }}
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">
+                Stok: {{ $product->stock }} | Kategori: {{ $product->category }}
+            </div>
+            <div class="product-footer" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: auto; width: 100%;">
+                <div class="product-price" style="font-size: 1rem; color: var(--text-main); font-weight: 700;">
+                    Rp {{ number_format($product->price, 0, ',', '.') }}<span style="font-size: 0.75rem; font-weight: 500; color: var(--text-muted);">/hari</span>
+                </div>
+                
+                @if($product->stock > 0)
+                    <form action="{{ route('cart.add', $product->id) }}" method="POST" style="width: 100%; margin: 0;">
+                        @csrf
+                        <button type="submit" class="btn btn-dark" style="width: 100%; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; box-shadow: none; font-weight: 600;">
+                            + Keranjang
+                        </button>
+                    </form>
+                @else
+                    <button class="btn" disabled style="width: 100%; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; background: #cbd5e1; color: #94a3b8; cursor: not-allowed; box-shadow: none; font-weight: 600;">
+                        Habis
+                    </button>
+                @endif
             </div>
         </div>
-        @endfor
+        @endforeach
     </div>
 @endsection

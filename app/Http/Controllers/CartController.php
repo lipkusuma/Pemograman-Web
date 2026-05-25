@@ -1,0 +1,273 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Cart;
+use App\Models\Product;
+use App\Models\Transaction;
+use App\Models\TransactionItem;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
+
+class CartController extends Controller
+{
+    /** Display the user's cart */
+    public function index()
+    {
+        $userId = session('user_id');
+        $carts = Cart::where('user_id', $userId)->with('product')->get();
+
+        return view('cart.index', compact('carts'));
+    }
+
+    /** Add a product to the cart */
+    public function add(Request $request, Product $product)
+    {
+        $userId = session('user_id');
+
+        // Check if product is in stock
+        if ($product->stock <= 0) {
+            return back()->with('error', 'Produk ini sedang tidak tersedia (stok habis).');
+        }
+
+        // Check if item already exists in user's cart
+        $cartItem = Cart::where('user_id', $userId)
+            ->where('product_id', $product->id)
+            ->first();
+
+        if ($cartItem) {
+            // Increase qty if stock allows
+            if ($cartItem->qty < $product->stock) {
+                $cartItem->increment('qty');
+            } else {
+                return redirect()->route('cart.index')->with('warning', 'Jumlah di keranjang sudah mencapai batas stok maksimum.');
+            }
+        } else {
+            // Create new cart item
+            Cart::create([
+                'user_id' => $userId,
+                'product_id' => $product->id,
+                'qty' => 1,
+                'duration_days' => 1,
+            ]);
+        }
+
+        return redirect()->route('cart.index')->with('success', 'Produk berhasil ditambahkan ke keranjang.');
+    }
+
+    /** Update cart item quantity */
+    public function update(Request $request, Cart $cart)
+    {
+        $userId = session('user_id');
+        if ($cart->user_id != $userId) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $action = $request->input('action');
+        $product = $cart->product;
+
+        if ($action === 'increase') {
+            if ($cart->qty < $product->stock) {
+                $cart->increment('qty');
+            } else {
+                return back()->with('warning', 'Jumlah tidak bisa melebihi stok yang tersedia.');
+            }
+        } elseif ($action === 'decrease') {
+            if ($cart->qty > 1) {
+                $cart->decrement('qty');
+            } else {
+                $cart->delete();
+                return back()->with('success', 'Item berhasil dihapus dari keranjang.');
+            }
+        }
+
+        return back();
+    }
+
+    /** Remove item from cart */
+    public function delete(Cart $cart)
+    {
+        $userId = session('user_id');
+        if ($cart->user_id != $userId) {
+            return back()->with('error', 'Unauthorized access.');
+        }
+
+        $cart->delete();
+        return back()->with('success', 'Produk berhasil dihapus dari keranjang.');
+    }
+
+    /** Checkout page for selected cart items */
+    public function checkout(Request $request)
+    {
+        $userId = session('user_id');
+        $selectedIds = $request->input('items', []);
+
+        if (empty($selectedIds)) {
+            return redirect()->route('cart.index')->with('warning', 'Pilih minimal satu produk untuk melakukan sewa.');
+        }
+
+        $cartItems = Cart::where('user_id', $userId)
+            ->whereIn('id', $selectedIds)
+            ->with('product')
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return redirect()->route('cart.index')->with('error', 'Produk tidak ditemukan.');
+        }
+
+        return view('cart.checkout', compact('cartItems', 'selectedIds'));
+    }
+
+    /** Process checkout and create transaction (Pending Payment) */
+    public function processCheckout(Request $request)
+    {
+        $userId = session('user_id');
+        $selectedIds = $request->input('items', []);
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $pickupLocation = $request->input('pickup_location');
+
+        if (empty($selectedIds)) {
+            return redirect()->route('cart.index')->with('warning', 'Pilih minimal satu produk untuk melakukan sewa.');
+        }
+
+        if (empty($startDate) || empty($endDate) || empty($pickupLocation)) {
+            return back()->withInput()->with('error', 'Semua kolom wajib diisi (Tanggal sewa & Lokasi pengambilan).');
+        }
+
+        // Calculate rental duration in days
+        $start = Carbon::parse($startDate);
+        $end = Carbon::parse($endDate);
+        $durationDays = $start->diffInDays($end);
+        
+        // Rental must be at least 1 day
+        if ($durationDays <= 0) {
+            $durationDays = 1;
+        }
+
+        // Retrieve selected cart items
+        $cartItems = Cart::where('user_id', $userId)
+            ->whereIn('id', $selectedIds)
+            ->with('product')
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return redirect()->route('cart.index')->with('error', 'Produk tidak ditemukan.');
+        }
+
+        // Calculate Subtotal & Total
+        $subtotal = 0;
+        foreach ($cartItems as $item) {
+            $subtotal += $item->product->price * $item->qty * $durationDays;
+        }
+
+        $discount = 0; // Default discount
+        $total = $subtotal - $discount;
+
+        // Generate Unique Invoice Number (TRX-YYYYMMDD-RAND)
+        $invoiceNumber = 'TRX-' . date('Ymd') . '-' . strtoupper(bin2hex(random_bytes(3)));
+
+        // Create transaction with status 'Menunggu Pembayaran'
+        $transaction = Transaction::create([
+            'user_id' => $userId,
+            'invoice_number' => $invoiceNumber,
+            'status' => 'Menunggu Pembayaran',
+            'pickup_location' => $pickupLocation,
+            'subtotal' => $subtotal,
+            'discount' => $discount,
+            'total' => $total,
+        ]);
+
+        // Create Transaction Items and remove from cart
+        foreach ($cartItems as $item) {
+            TransactionItem::create([
+                'transaction_id' => $transaction->id,
+                'product_id' => $item->product_id,
+                'qty' => $item->qty,
+                'price' => $item->product->price,
+                'duration_days' => $durationDays,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+            ]);
+
+            // Delete from cart
+            $item->delete();
+        }
+
+        return redirect()->route('cart.payment', $transaction->id);
+    }
+
+    /** Display payment method selection page */
+    public function payment(Transaction $transaction)
+    {
+        $userId = session('user_id');
+        if ($transaction->user_id != $userId) {
+            return redirect()->route('katalog')->with('error', 'Akses ditolak.');
+        }
+
+        if ($transaction->status !== 'Menunggu Pembayaran') {
+            return redirect()->route('transaksi')->with('info', 'Transaksi ini sudah selesai atau dibatalkan.');
+        }
+
+        return view('cart.payment', compact('transaction'));
+    }
+
+    /** Process simulated payment */
+    public function processPayment(Request $request, Transaction $transaction)
+    {
+        $userId = session('user_id');
+        if ($transaction->user_id != $userId) {
+            return redirect()->route('katalog')->with('error', 'Akses ditolak.');
+        }
+
+        $paymentMethod = $request->input('payment_method');
+        if (empty($paymentMethod)) {
+            return back()->with('error', 'Silakan pilih metode pembayaran terlebih dahulu.');
+        }
+
+        // Verify and update product stocks
+        $transactionItems = TransactionItem::where('transaction_id', $transaction->id)->with('product')->get();
+        foreach ($transactionItems as $item) {
+            $product = $item->product;
+            if ($product->stock < $item->qty) {
+                // If stock is not enough, cancel payment or alert
+                return back()->with('error', 'Stok untuk barang "' . $product->name . '" tidak mencukupi untuk disewa.');
+            }
+        }
+
+        // Reduce stock and update status for each product
+        foreach ($transactionItems as $item) {
+            $product = $item->product;
+            $newStock = $product->stock - $item->qty;
+            $product->stock = $newStock;
+            
+            if ($newStock <= 0) {
+                $product->status = 'Habis';
+            } elseif ($newStock <= 3) {
+                $product->status = 'Hampir Habis';
+            } else {
+                $product->status = 'Tersedia';
+            }
+            $product->save();
+        }
+
+        // Complete the payment
+        $transaction->update([
+            'status' => 'Lunas',
+            'payment_method' => $paymentMethod,
+        ]);
+
+        return redirect()->route('cart.paymentSuccess', $transaction->id);
+    }
+
+    /** Display payment success screen */
+    public function paymentSuccess(Transaction $transaction)
+    {
+        $userId = session('user_id');
+        if ($transaction->user_id != $userId) {
+            return redirect()->route('katalog')->with('error', 'Akses ditolak.');
+        }
+
+        return view('cart.success', compact('transaction'));
+    }
+}
