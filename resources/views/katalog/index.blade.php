@@ -43,7 +43,6 @@
             <p>Today only, enjoy stylish 20% off and receive exclusive gift!<br>Elevate your wardrobe now!</p>
         </div>
         <div class="banner-image">
-            <div style="width: 100px; height: 100px; background: rgba(0,0,0,0.5); border-radius: 8px;"></div>
         </div>
     </div>
 
