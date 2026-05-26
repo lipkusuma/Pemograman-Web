@@ -24,6 +24,24 @@
         </button>
         <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin:0;">Profil & Akun</h2>
     </div>
+    <div class="topbar-actions">
+        <a href="{{ route('cart.index') }}" class="action-icon" title="Keranjang" style="position: relative; display: inline-block;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            @php
+                $cartCount = \App\Models\Cart::where('user_id', session('user_id'))->sum('qty');
+            @endphp
+            @if($cartCount > 0)
+                <span style="position: absolute; top: -8px; right: -8px; background-color: #ef4444; color: white; border-radius: 50%; font-size: 0.65rem; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                    {{ $cartCount }}
+                </span>
+            @endif
+        </a>
+        <div class="profile-circle">
+            @if(session('profile_pic'))
+                <img src="{{ asset('uploads/' . session('profile_pic')) }}" alt="Profile">
+            @endif
+        </div>
+    </div>
 @endsection
 
 @section('content')

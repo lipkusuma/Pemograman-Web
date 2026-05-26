@@ -14,6 +14,7 @@
         @if($role === 'admin')
             {{-- Menu Admin --}}
             <a href="{{ route('dashboard') }}" class="sidebar-item {{ $currentPage === 'dashboard' ? 'active' : '' }}">
+                {{-- <i class="fa-regular fa-house"></i> --}}
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 Dashboard
             </a>
@@ -28,6 +29,7 @@
         @else
             {{-- Menu User --}}
             <a href="{{ route('katalog') }}" class="sidebar-item {{ $currentPage === 'katalog' ? 'active' : '' }}">
+                {{-- <i class="fa-regular fa-house"></i> --}}
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 Beranda
             </a>

@@ -9,6 +9,7 @@ use App\Http\Controllers\StokBarangController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CartController;
 
 // Landing Page (publik)
 Route::get("/", [HomeController::class, "index"])->name("home");
@@ -44,6 +45,17 @@ Route::middleware("auth.check")->group(function () {
     Route::post("/profile", [ProfileController::class, "upload"])->name(
         "profile.upload",
     );
+
+    // Cart & Checkout Routes
+    Route::get("/cart", [CartController::class, "index"])->name("cart.index");
+    Route::post("/cart/add/{product}", [CartController::class, "add"])->name("cart.add");
+    Route::post("/cart/update/{cart}", [CartController::class, "update"])->name("cart.update");
+    Route::delete("/cart/delete/{cart}", [CartController::class, "delete"])->name("cart.delete");
+    Route::get("/checkout", [CartController::class, "checkout"])->name("cart.checkout");
+    Route::post("/checkout", [CartController::class, "processCheckout"])->name("cart.processCheckout");
+    Route::get("/payment/{transaction}", [CartController::class, "payment"])->name("cart.payment");
+    Route::post("/payment/{transaction}", [CartController::class, "processPayment"])->name("cart.processPayment");
+    Route::get("/payment-success/{transaction}", [CartController::class, "paymentSuccess"])->name("cart.paymentSuccess");
 
     // Route khusus Admin
     Route::middleware("admin.check")->group(function () {
