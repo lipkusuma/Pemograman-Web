@@ -41,11 +41,12 @@ class AuthController extends Controller
 
         // Set session login
         session([
-            "user_id" => $user->id,
-            "username" => $user->username,
-            "name" => $user->name,
-            "email" => $user->email,
-            "role" => $user->role,
+            "user_id"     => $user->id,
+            "username"    => $user->username,
+            "name"        => $user->name,
+            "email"       => $user->email,
+            "role"        => $user->role,
+            "profile_pic" => $user->profile_pic,
         ]);
 
         // Redirect berdasarkan role
