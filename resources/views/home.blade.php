@@ -8,7 +8,10 @@
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700,800" rel="stylesheet" />
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Instrument Sans', Arial, sans-serif; background-color: #E2E8F0; color: #020617; overflow-x: hidden; position: relative; min-height: 100vh; }
+        body { font-family: 'Instrument Sans', Arial, sans-serif; 
+        background-color: #E2E8F0; 
+        color: #020617; overflow-x: hidden; 
+        position: relative; min-height: 100vh; }
         a { text-decoration: none; color: inherit; }
         ul { list-style: none; }
         button { cursor: pointer; border: none; outline: none; }
