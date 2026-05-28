@@ -39,12 +39,11 @@ Route::middleware("auth.check")->group(function () {
     Route::get("/transaksi", [TransaksiController::class, "index"])->name(
         "transaksi",
     );
-    Route::get("/profile", [ProfileController::class, "index"])->name(
-        "profile",
-    );
-    Route::post("/profile", [ProfileController::class, "upload"])->name(
-        "profile.upload",
-    );
+    Route::get("/profile", [ProfileController::class, "index"])->name("profile");
+    Route::post("/profile/upload", [ProfileController::class, "upload"])->name("profile.upload");
+    Route::post("/profile/personal-info", [ProfileController::class, "updatePersonalInfo"])->name("profile.updatePersonalInfo");
+    Route::post("/profile/bio", [ProfileController::class, "updateBio"])->name("profile.updateBio");
+    Route::post("/profile/password", [ProfileController::class, "updatePassword"])->name("profile.updatePassword");
 
     // Cart & Checkout Routes
     Route::get("/cart", [CartController::class, "index"])->name("cart.index");

@@ -27,6 +27,12 @@ class CartController extends Controller
 
         // Check if product is in stock
         if ($product->stock <= 0) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Produk ini sedang tidak tersedia (stok habis).',
+                ], 422);
+            }
             return back()->with('error', 'Produk ini sedang tidak tersedia (stok habis).');
         }
 
@@ -40,15 +46,30 @@ class CartController extends Controller
             if ($cartItem->qty < $product->stock) {
                 $cartItem->increment('qty');
             } else {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Jumlah di keranjang sudah mencapai batas stok maksimum.',
+                    ], 422);
+                }
                 return redirect()->route('cart.index')->with('warning', 'Jumlah di keranjang sudah mencapai batas stok maksimum.');
             }
         } else {
             // Create new cart item
             Cart::create([
-                'user_id' => $userId,
-                'product_id' => $product->id,
-                'qty' => 1,
+                'user_id'      => $userId,
+                'product_id'   => $product->id,
+                'qty'          => 1,
                 'duration_days' => 1,
+            ]);
+        }
+
+        if ($request->expectsJson()) {
+            $cartCount = Cart::where('user_id', $userId)->sum('qty');
+            return response()->json([
+                'success'    => true,
+                'message'    => 'Produk berhasil ditambahkan ke keranjang.',
+                'cart_count' => $cartCount,
             ]);
         }
 
@@ -59,40 +80,97 @@ class CartController extends Controller
     public function update(Request $request, Cart $cart)
     {
         $userId = session('user_id');
+
         if ($cart->user_id != $userId) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        $action = $request->input('action');
+        $action  = $request->input('action');
         $product = $cart->product;
+        $deleted = false;
 
         if ($action === 'increase') {
             if ($cart->qty < $product->stock) {
                 $cart->increment('qty');
+                $cart->refresh();
+                $message = 'Jumlah berhasil ditambahkan.';
             } else {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Jumlah tidak bisa melebihi stok yang tersedia.',
+                    ], 422);
+                }
                 return back()->with('warning', 'Jumlah tidak bisa melebihi stok yang tersedia.');
             }
         } elseif ($action === 'decrease') {
             if ($cart->qty > 1) {
                 $cart->decrement('qty');
+                $cart->refresh();
+                $message = 'Jumlah berhasil dikurangi.';
             } else {
                 $cart->delete();
-                return back()->with('success', 'Item berhasil dihapus dari keranjang.');
+                $deleted = true;
+                $message = 'Item berhasil dihapus dari keranjang.';
             }
+        } else {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aksi tidak valid.',
+                ], 422);
+            }
+            return back();
+        }
+
+        if ($request->expectsJson()) {
+            $newQty      = $deleted ? 0 : $cart->qty;
+            $newSubtotal = $deleted ? 'Rp 0' : 'Rp ' . number_format($product->price * $newQty, 0, ',', '.');
+            $cartCount   = Cart::where('user_id', $userId)->sum('qty');
+
+            return response()->json([
+                'success'     => true,
+                'new_qty'     => $newQty,
+                'new_subtotal' => $newSubtotal,
+                'cart_count'  => $cartCount,
+                'deleted'     => $deleted,
+                'message'     => $message,
+            ]);
+        }
+
+        if ($deleted) {
+            return back()->with('success', $message);
         }
 
         return back();
     }
 
     /** Remove item from cart */
-    public function delete(Cart $cart)
+    public function delete(Request $request, Cart $cart)
     {
         $userId = session('user_id');
+
         if ($cart->user_id != $userId) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized access.',
+                ], 403);
+            }
             return back()->with('error', 'Unauthorized access.');
         }
 
         $cart->delete();
+
+        if ($request->expectsJson()) {
+            $cartCount = Cart::where('user_id', $userId)->sum('qty');
+            return response()->json([
+                'success'    => true,
+                'message'    => 'Produk berhasil dihapus dari keranjang.',
+                'cart_count' => $cartCount,
+            ]);
+        }
+
         return back()->with('success', 'Produk berhasil dihapus dari keranjang.');
     }
 
@@ -139,7 +217,7 @@ class CartController extends Controller
         $start = Carbon::parse($startDate);
         $end = Carbon::parse($endDate);
         $durationDays = $start->diffInDays($end);
-        
+
         // Rental must be at least 1 day
         if ($durationDays <= 0) {
             $durationDays = 1;
@@ -169,25 +247,25 @@ class CartController extends Controller
 
         // Create transaction with status 'Menunggu Pembayaran'
         $transaction = Transaction::create([
-            'user_id' => $userId,
-            'invoice_number' => $invoiceNumber,
-            'status' => 'Menunggu Pembayaran',
+            'user_id'         => $userId,
+            'invoice_number'  => $invoiceNumber,
+            'status'          => 'Menunggu Pembayaran',
             'pickup_location' => $pickupLocation,
-            'subtotal' => $subtotal,
-            'discount' => $discount,
-            'total' => $total,
+            'subtotal'        => $subtotal,
+            'discount'        => $discount,
+            'total'           => $total,
         ]);
 
         // Create Transaction Items and remove from cart
         foreach ($cartItems as $item) {
             TransactionItem::create([
                 'transaction_id' => $transaction->id,
-                'product_id' => $item->product_id,
-                'qty' => $item->qty,
-                'price' => $item->product->price,
-                'duration_days' => $durationDays,
-                'start_date' => $startDate,
-                'end_date' => $endDate,
+                'product_id'     => $item->product_id,
+                'qty'            => $item->qty,
+                'price'          => $item->product->price,
+                'duration_days'  => $durationDays,
+                'start_date'     => $startDate,
+                'end_date'       => $endDate,
             ]);
 
             // Delete from cart
@@ -240,7 +318,7 @@ class CartController extends Controller
             $product = $item->product;
             $newStock = $product->stock - $item->qty;
             $product->stock = $newStock;
-            
+
             if ($newStock <= 0) {
                 $product->status = 'Habis';
             } elseif ($newStock <= 3) {
@@ -253,7 +331,7 @@ class CartController extends Controller
 
         // Complete the payment
         $transaction->update([
-            'status' => 'Lunas',
+            'status'         => 'Lunas',
             'payment_method' => $paymentMethod,
         ]);
 
