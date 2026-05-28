@@ -269,9 +269,7 @@
                 labels: {!! json_encode($paymentMethods->pluck('payment_method')) !!},
                 datasets: [{
                     data: {!! json_encode($paymentMethods->pluck('count')) !!},
-                    backgroundColor: ['#38bdf8', '#06b6d4', '#14b8a6', '#10b981', '#f59e0b', '#f97316'],
-                    borderColor: getComputedColor('--bg-secondary'),
-                    borderWidth: 2
+                    backgroundColor: ['#38bdf8', '#06b6d4', '#14b8a6', '#10b981', '#f59e0b', '#f97316']
                 }]
             },
             options: {

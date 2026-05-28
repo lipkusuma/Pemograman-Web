@@ -17,25 +17,26 @@ class DashboardController extends Controller
         $endOfMonth = Carbon::now()->endOfMonth();
         $startOfYear = Carbon::now()->startOfYear();
 
-        // total pendapatan
+        // total pendapatan (hanya transaksi selesai/Lunas)
         $totalRevenueThisMonth = Transaction::whereBetween('created_at', [$currentMonth, $endOfMonth])
+            ->where('status', 'Lunas')
             ->sum('total');
 
-        // total transaksi
+        // total transaksi (semua status untuk laporan transaksi)
         $totalTransactionsThisMonth = Transaction::whereBetween('created_at', [$currentMonth, $endOfMonth])
             ->count();
 
-        // Total produk terjual 
+        // Total produk terjual (hanya transaksi selesai/Lunas)
         $totalItemsSoldThisMonth = TransactionItem::whereHas('transaction', function ($query) use ($currentMonth, $endOfMonth) {
-            $query->whereBetween('created_at', [$currentMonth, $endOfMonth]);
+            $query->whereBetween('created_at', [$currentMonth, $endOfMonth])
+                ->where('status', 'Lunas');
         })->sum('qty');
 
         // 4. KPI - Low Stock Products (stok <= 10)
         $lowStockCount = Product::where('stock', '<=', 10)->count();
 
-        // 5. KPI - Pending/Unpaid Transactions
-        $pendingTransactions = Transaction::where('status', 'pending')
-            ->orWhere('status', 'unpaid')
+        // 5. KPI - Pending Transactions
+        $pendingTransactions = Transaction::where('status', 'Menunggu Pembayaran')
             ->count();
 
         // 6. KPI - Active Customers This Month
@@ -43,20 +44,23 @@ class DashboardController extends Controller
             ->distinct('user_id')
             ->count('user_id');
 
-        // 7. Sales Data Last 7 Days (for chart)
+        // 7. Sales Data Last 7 Days (hanya transaksi selesai/Lunas)
         $last7Days = [];
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::now()->subDays($i);
-            $sales = Transaction::whereDate('created_at', $date)->sum('total');
+            $sales = Transaction::whereDate('created_at', $date)
+                ->where('status', 'Lunas')
+                ->sum('total');
             $last7Days[] = [
                 'date' => $date->format('d/m'),
                 'total' => $sales ?? 0
             ];
         }
 
-        // 8. Top 5 Products by Quantity Sold This Month
+        // 8. Top 5 Products by Quantity Sold This Month (hanya transaksi selesai/Lunas)
         $topProducts = TransactionItem::whereHas('transaction', function ($query) use ($currentMonth, $endOfMonth) {
-            $query->whereBetween('created_at', [$currentMonth, $endOfMonth]);
+            $query->whereBetween('created_at', [$currentMonth, $endOfMonth])
+                ->where('status', 'Lunas');
         })
             ->select('product_id', DB::raw('SUM(qty) as total_qty'))
             ->groupBy('product_id')
@@ -65,8 +69,9 @@ class DashboardController extends Controller
             ->with('product')
             ->get();
 
-        // 9. Payment Method Breakdown This Month
+        // 9. Payment Method Breakdown This Month (hanya transaksi selesai/Lunas)
         $paymentMethods = Transaction::whereBetween('created_at', [$currentMonth, $endOfMonth])
+            ->where('status', 'Lunas')
             ->select('payment_method', DB::raw('COUNT(*) as count'))
             ->groupBy('payment_method')
             ->get();
@@ -87,6 +92,7 @@ class DashboardController extends Controller
         $lastMonth = Carbon::now()->subMonth()->startOfMonth();
         $lastMonthEnd = Carbon::now()->subMonth()->endOfMonth();
         $revenueLastMonth = Transaction::whereBetween('created_at', [$lastMonth, $lastMonthEnd])
+            ->where('status', 'Lunas')
             ->sum('total');
 
         $revenueGrowth = $revenueLastMonth > 0
