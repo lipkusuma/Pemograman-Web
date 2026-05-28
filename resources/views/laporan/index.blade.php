@@ -26,10 +26,10 @@
 @section('content')
     <!-- Filter Buttons -->
     <div class="laporan-filters">
-        <button class="filter-btn active">Semua</button>
-        <button class="filter-btn">Hari Ini</button>
-        <button class="filter-btn">Minggu Ini</button>
-        <button class="filter-btn">Bulan Ini</button>
+        <a href="{{ route('laporan', ['filter' => 'semua']) }}" class="filter-btn {{ $filter === 'semua' ? 'active' : '' }}">Semua</a>
+        <a href="{{ route('laporan', ['filter' => 'hari']) }}" class="filter-btn {{ $filter === 'hari' ? 'active' : '' }}">Hari Ini</a>
+        <a href="{{ route('laporan', ['filter' => 'minggu']) }}" class="filter-btn {{ $filter === 'minggu' ? 'active' : '' }}">Minggu Ini</a>
+        <a href="{{ route('laporan', ['filter' => 'bulan']) }}" class="filter-btn {{ $filter === 'bulan' ? 'active' : '' }}">Bulan Ini</a>
     </div>
 
     <!-- Stat Cards -->
@@ -37,91 +37,116 @@
         <div class="laporan-stat-card">
             <div class="stat-title">Total Transaksi</div>
             <div class="stat-value">{{ $totalTransaksi }}</div>
-            <div class="stat-change positive">↑ 12% dari bulan lalu</div>
+            @if($filter !== 'semua')
+                <div class="stat-change {{ $changeTransaksi['direction'] }}">
+                    {{ $changeTransaksi['direction'] === 'positive' ? '↑' : ($changeTransaksi['direction'] === 'negative' ? '↓' : '—') }}
+                    {{ $changeTransaksi['value'] }}% dari periode lalu
+                </div>
+            @else
+                <div class="stat-change neutral">Semua waktu</div>
+            @endif
         </div>
         <div class="laporan-stat-card">
             <div class="stat-title">Total Pendapatan</div>
-            <div class="stat-value">Rp {{ number_format($totalPendapatan / 1000000, 1, ',', '.') }}jt</div>
-            <div class="stat-change positive">↑ 8% dari bulan lalu</div>
+            <div class="stat-value">
+                @if($totalPendapatan >= 1000000)
+                    Rp {{ number_format($totalPendapatan / 1000000, 1, ',', '.') }}jt
+                @else
+                    Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
+                @endif
+            </div>
+            @if($filter !== 'semua')
+                <div class="stat-change {{ $changePendapatan['direction'] }}">
+                    {{ $changePendapatan['direction'] === 'positive' ? '↑' : ($changePendapatan['direction'] === 'negative' ? '↓' : '—') }}
+                    {{ $changePendapatan['value'] }}% dari periode lalu
+                </div>
+            @else
+                <div class="stat-change neutral">Semua waktu</div>
+            @endif
         </div>
         <div class="laporan-stat-card">
             <div class="stat-title">Produk Terjual</div>
             <div class="stat-value">{{ $totalProdukTerjual }}</div>
-            <div class="stat-change negative">↓ 3% dari bulan lalu</div>
+            @if($filter !== 'semua')
+                <div class="stat-change {{ $changeProdukTerjual['direction'] }}">
+                    {{ $changeProdukTerjual['direction'] === 'positive' ? '↑' : ($changeProdukTerjual['direction'] === 'negative' ? '↓' : '—') }}
+                    {{ $changeProdukTerjual['value'] }}% dari periode lalu
+                </div>
+            @else
+                <div class="stat-change neutral">Semua waktu</div>
+            @endif
         </div>
         <div class="laporan-stat-card">
-            <div class="stat-title">Pelanggan Unik</div>
+            <div class="stat-title">Total Pelanggan</div>
             <div class="stat-value">{{ $totalPelanggan }}</div>
-            <div class="stat-change positive">↑ 5% dari bulan lalu</div>
-        </div>
-    </div>
-
-    <!-- Grafik Sederhana -->
-    <div class="dash-card" style="margin-bottom: 24px;">
-        <h3 class="dash-card-title">Grafik Pendapatan Mingguan</h3>
-        <div style="height: 160px; position: relative; overflow: hidden;">
-            <svg preserveAspectRatio="none" viewBox="0 0 100 50" style="width: 100%; height: 100%;">
-                <defs>
-                    <linearGradient id="gradLaporan" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" style="stop-color:#4ade80;stop-opacity:0.8" />
-                        <stop offset="100%" style="stop-color:#4ade80;stop-opacity:0.05" />
-                    </linearGradient>
-                </defs>
-                <path d="M0,50 L0,35 C15,25 25,40 35,20 C45,5 55,30 65,15 C75,5 85,25 100,10 L100,50 Z" fill="url(#gradLaporan)" />
-                <path d="M0,35 C15,25 25,40 35,20 C45,5 55,30 65,15 C75,5 85,25 100,10" fill="none" stroke="#16a34a" stroke-width="1.5"/>
-            </svg>
+            @if($filter !== 'semua')
+                <div class="stat-change {{ $changePelanggan['direction'] }}">
+                    {{ $changePelanggan['direction'] === 'positive' ? '↑' : ($changePelanggan['direction'] === 'negative' ? '↓' : '—') }}
+                    {{ $changePelanggan['value'] }}% dari periode lalu
+                </div>
+            @else
+                <div class="stat-change neutral">Semua waktu</div>
+            @endif
         </div>
     </div>
 
     <!-- Tabel Laporan -->
     <div class="dash-card" style="overflow-x: auto;">
         <h3 class="dash-card-title">Detail Transaksi</h3>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Tanggal</th>
-                    <th>Pelanggan</th>
-                    <th>Produk</th>
-                    <th>Qty</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($laporan as $trx)
-                <tr>
-                    <td style="font-weight:600;">{{ $trx['id'] }}</td>
-                    <td style="color: var(--text-muted);">{{ \Carbon\Carbon::parse($trx['tanggal'])->translatedFormat('d M Y') }}</td>
-                    <td>{{ $trx['pelanggan'] }}</td>
-                    <td>{{ $trx['produk'] }}</td>
-                    <td style="font-weight:600;">{{ $trx['qty'] }}</td>
-                    <td>Rp {{ number_format($trx['total'], 0, ',', '.') }}</td>
-                    <td>
-                        @php
-                            $statusClass = match($trx['status']) {
-                                'Selesai'    => 'status-completed',
-                                'Pending'    => 'status-pending',
-                                default      => 'status-in-progress',
-                            };
-                        @endphp
-                        <span class="status-badge {{ $statusClass }}">{{ strtoupper($trx['status']) }}</span>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+
+        @if(count($laporan) === 0)
+            <div style="text-align: center; padding: 48px 20px; color: var(--text-muted);">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 12px; opacity: 0.5;">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+                    <rect x="9" y="3" width="6" height="4" rx="1"/>
+                    <path d="M9 12h6M9 16h6"/>
+                </svg>
+                <p style="font-weight: 600; font-size: 1rem; margin: 0 0 4px;">Belum ada transaksi</p>
+                <p style="font-size: 0.875rem; margin: 0;">Data transaksi akan muncul setelah pelanggan melakukan pemesanan.</p>
+            </div>
+        @else
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Invoice</th>
+                        <th>Tanggal</th>
+                        <th>Pelanggan</th>
+                        <th>Produk</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($laporan as $trx)
+                    <tr>
+                        <td style="font-weight:600;">{{ $trx['id'] }}</td>
+                        <td style="color: var(--text-muted);">{{ \Carbon\Carbon::parse($trx['tanggal'])->translatedFormat('d M Y') }}</td>
+                        <td>{{ $trx['pelanggan'] }}</td>
+                        <td>{{ $trx['produk'] }}</td>
+                        <td style="font-weight:600;">{{ $trx['qty'] }}</td>
+                        <td>Rp {{ number_format($trx['total'], 0, ',', '.') }}</td>
+                        <td>
+                            @php
+                                $statusClass = match($trx['status']) {
+                                    'Lunas'                 => 'status-completed',
+                                    'Menunggu Pembayaran'   => 'status-pending',
+                                    'Dibatalkan'            => 'status-in-progress',
+                                    default                 => 'status-pending',
+                                };
+                                $statusLabel = match($trx['status']) {
+                                    'Lunas'                 => 'LUNAS',
+                                    'Menunggu Pembayaran'   => 'MENUNGGU',
+                                    'Dibatalkan'            => 'BATAL',
+                                    default                 => strtoupper($trx['status']),
+                                };
+                            @endphp
+                            <span class="status-badge {{ $statusClass }}">{{ $statusLabel }}</span>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
     </div>
 @endsection
-
-@push('scripts')
-<script>
-    // Filter button toggle
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
-</script>
-@endpush
