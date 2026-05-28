@@ -62,13 +62,18 @@
     <div class="products-grid">
         @foreach($products as $product)
         <div class="product-card" style="display: flex; flex-direction: column;">
-            <div class="product-image" style="background-color: var(--input-bg); border-radius: 8px; height: 140px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">
-                @if($product->category == 'Tenda') ⛺
-                @elseif($product->category == 'Tas') 🎒
-                @elseif($product->category == 'Alat Pribadi') 🥾
-                @elseif($product->category == 'Alat Masak') 🍳
-                @elseif($product->category == 'Penerangan') 💡
-                @else 📦
+            <div class="product-image" style="background-color: var(--input-bg); border-radius: 8px; height: 140px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; overflow: hidden;">
+                @if($product->image)
+                    <img src="{{ asset('uploads/products/' . $product->image) }}" alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                @else
+                    @if($product->category == 'Tenda')
+                        <img src="{{ asset()}}" alt="">
+                    @elseif($product->category == 'Tas') 🎒
+                    @elseif($product->category == 'Alat Pribadi') 🥾
+                    @elseif($product->category == 'Alat Masak') 🍳
+                    @elseif($product->category == 'Penerangan') 💡
+                    @else 📦
+                    @endif
                 @endif
             </div>
             <div class="product-title" style="margin-top: 12px; font-weight: 700; font-size: 0.95rem; min-height: 40px; color: var(--text-main);">
