@@ -66,8 +66,7 @@
                 @if($product->image)
                     <img src="{{ asset('uploads/products/' . $product->image) }}" alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
                 @else
-                    @if($product->category == 'Tenda')
-                        <img src="{{ asset()}}" alt="">
+                    @if($product->category == 'Tenda') ⛺
                     @elseif($product->category == 'Tas') 🎒
                     @elseif($product->category == 'Alat Pribadi') 🥾
                     @elseif($product->category == 'Alat Masak') 🍳

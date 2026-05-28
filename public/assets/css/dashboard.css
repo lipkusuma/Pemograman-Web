@@ -176,6 +176,8 @@
 .laporan-stat-card:nth-child(2)::before { background: linear-gradient(90deg, #16a34a, #4ade80); }
 .laporan-stat-card:nth-child(3)::before { background: linear-gradient(90deg, #ea580c, #fb923c); }
 .laporan-stat-card:nth-child(4)::before { background: linear-gradient(90deg, #9333ea, #c084fc); }
+.laporan-stat-card:nth-child(5)::before { background: linear-gradient(90deg, #eab308, #fde047); }
+.laporan-stat-card:nth-child(6)::before { background: linear-gradient(90deg, #ef4444, #fca5a5); }
 .laporan-stat-card .stat-title { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; margin-bottom: 8px; }
 .stat-change { font-size: 0.8rem; font-weight: 600; }
 .stat-change.positive { color: #16a34a; }
