@@ -74,6 +74,9 @@ class ProfileController extends Controller
         $user->name  = $name;
         $user->email = $email;
         $user->phone = $phone;
+        if ($request->has('bio')) {
+            $user->bio = trim($request->input('bio', ''));
+        }
         $user->save();
 
         session(['name' => $name, 'email' => $email]);

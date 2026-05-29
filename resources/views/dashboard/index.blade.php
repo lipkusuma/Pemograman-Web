@@ -27,7 +27,7 @@
 @section('content')
     <!-- KPI Cards Row -->
     <div class="laporan-grid">
-        <!-- Card 1: Total Revenue -->
+         {{-- Card 1: Total Revenue  --}}
         <div class="laporan-stat-card">
             <div class="stat-title">Total Pendapatan</div>
             <div class="stat-value">Rp{{ number_format($totalRevenueThisMonth, 0, ',', '.') }}</div>

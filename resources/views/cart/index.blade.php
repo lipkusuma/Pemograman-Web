@@ -25,17 +25,17 @@
     <input type="hidden" id="csrf-token" value="{{ csrf_token() }}">
 
     @if(session('success'))
-        <div style="background-color: #dcfce7; border: 1px solid #bbf7d0; color: #166534; padding: 16px; border-radius: 8px; margin-bottom: 24px; font-weight: 500;">
+        <div class="alert toast-success" style="padding: 16px; border-radius: 8px; margin-bottom: 24px; font-weight: 500;">
             {{ session('success') }}
         </div>
     @endif
     @if(session('warning'))
-        <div style="background-color: #fef9c3; border: 1px solid #fef08a; color: #854d0e; padding: 16px; border-radius: 8px; margin-bottom: 24px; font-weight: 500;">
+        <div class="alert toast-warning" style="padding: 16px; border-radius: 8px; margin-bottom: 24px; font-weight: 500;">
             {{ session('warning') }}
         </div>
     @endif
     @if(session('error'))
-        <div style="background-color: #fee2e2; border: 1px solid #fecdd3; color: #9f1239; padding: 16px; border-radius: 8px; margin-bottom: 24px; font-weight: 500;">
+        <div class="alert toast-error" style="padding: 16px; border-radius: 8px; margin-bottom: 24px; font-weight: 500;">
             {{ session('error') }}
         </div>
     @endif
@@ -63,7 +63,7 @@
                     <div class="trx-card" id="cart-row-{{ $cart->id }}" style="display: flex; align-items: center; gap: 16px; padding: 16px 24px; position: relative; transition: opacity 0.3s ease;">
                         {{-- Checkbox Select Item --}}
                         <div style="display: flex; align-items: center; justify-content: center;">
-                            <input type="checkbox" name="items[]" value="{{ $cart->id }}" class="item-checkbox" checked style="width: 20px; height: 20px; border-radius: 4px; cursor: pointer; accent-color: #1e3a8a;" onchange="updateSummary()">
+                            <input type="checkbox" name="items[]" value="{{ $cart->id }}" class="item-checkbox" checked style="width: 20px; height: 20px; border-radius: 4px; cursor: pointer; accent-color: var(--accent);" onchange="updateSummary()">
                         </div>
 
                         {{-- Product Thumbnail --}}
@@ -89,7 +89,7 @@
                                         data-cart-id="{{ $cart->id }}"
                                         data-url="{{ route('cart.delete', $cart->id) }}"
                                         class="btn-delete-item"
-                                        style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px; transition: color 0.2s;"
+                                            style="background: none; border: none; color: var(--danger); cursor: pointer; padding: 4px; transition: color 0.2s;"
                                         title="Hapus Barang">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                 </button>
@@ -105,7 +105,7 @@
                             <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; flex-wrap: wrap; gap: 8px;">
                                 <div style="display: flex; align-items: center; background-color: var(--input-bg); border-radius: 8px; padding: 4px 8px; gap: 12px; width: max-content;">
                                     {{-- Decrease button — AJAX --}}
-                                    <button type="button"
+                                        <button type="button"
                                             data-cart-id="{{ $cart->id }}"
                                             data-action="decrease"
                                             data-url="{{ route('cart.update', $cart->id) }}"
@@ -115,7 +115,7 @@
                                     <span id="qty-{{ $cart->id }}" style="font-weight: 700; font-size: 0.95rem; min-width: 16px; text-align: center;" data-qty="{{ $cart->qty }}">{{ $cart->qty }}x</span>
 
                                     {{-- Increase button — AJAX --}}
-                                    <button type="button"
+                                        <button type="button"
                                             data-cart-id="{{ $cart->id }}"
                                             data-action="increase"
                                             data-url="{{ route('cart.update', $cart->id) }}"
@@ -123,8 +123,8 @@
                                             style="background: none; border: none; font-size: 1.25rem; font-weight: 700; color: var(--text-main); padding: 0 4px; display: flex; align-items: center; justify-content: center; height: 24px; cursor: pointer;">+</button>
                                 </div>
 
-                                <div id="subtotal-{{ $cart->id }}"
-                                     style="font-weight: 800; color: #1e3a8a; font-size: 1.1rem;"
+                                  <div id="subtotal-{{ $cart->id }}"
+                                      style="font-weight: 800; color: var(--primary); font-size: 1.1rem;"
                                      class="subtotal-price-text"
                                      data-price="{{ $cart->product->price }}"
                                      data-qty="{{ $cart->qty }}">
@@ -140,7 +140,7 @@
             <div style="position: fixed; bottom: 0; left: 260px; right: 0; background-color: var(--card-bg); border-top: 1px solid var(--border-color); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; z-index: 99; transition: left 0.3s;" id="sticky-bottom-bar">
                 <div style="display: flex; align-items: center; gap: 24px;">
                     <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; color: var(--text-main);">
-                        <input type="checkbox" id="select-all-checkbox" checked style="width: 18px; height: 18px; cursor: pointer; accent-color: #1e3a8a;" onchange="toggleSelectAll()">
+                        <input type="checkbox" id="select-all-checkbox" checked style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent);" onchange="toggleSelectAll()">
                         Pilih Semua
                     </label>
                     <div style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500;">
@@ -150,7 +150,7 @@
                 <div style="display: flex; align-items: center; gap: 32px;">
                     <div style="text-align: right;">
                         <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">Total Harga Sementara:</div>
-                        <div style="font-size: 1.3rem; font-weight: 800; color: #1e3a8a;" id="summary-total-text">Rp 0</div>
+                        <div style="font-size: 1.3rem; font-weight: 800; color: var(--primary);" id="summary-total-text">Rp 0</div>
                     </div>
                     <button type="submit" class="btn btn-dark" style="border-radius: 8px; font-weight: 700; padding: 12px 28px;" id="checkout-btn">
                         Lanjut ke Rincian Sewa
@@ -167,6 +167,39 @@
         from { opacity: 0; transform: translateY(20px); }
         to   { opacity: 1; transform: translateY(0); }
     }
+    /* Alert variants use CSS variables so they follow theme */
+    .alert {
+        border: 1px solid transparent;
+    }
+    .toast-success {
+        background: var(--success-bg, #dcfce7);
+        border-color: var(--success-border, #bbf7d0);
+        color: var(--success-foreground, #166534);
+    }
+    .toast-warning {
+        background: var(--warning-bg, #fef9c3);
+        border-color: var(--warning-border, #fef08a);
+        color: var(--warning-foreground, #854d0e);
+    }
+    .toast-error {
+        background: var(--error-bg, #fee2e2);
+        border-color: var(--error-border, #fecdd3);
+        color: var(--error-foreground, #9f1239);
+    }
+    /* Global toast styles for JS to use */
+    .global-toast {
+        position: fixed;
+        bottom: 90px;
+        right: 24px;
+        z-index: 9999;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: .88rem;
+        color: #fff;
+        box-shadow: 0 8px 24px rgba(0,0,0,.15);
+        animation: slideUp .3s ease;
+    }
 </style>
 <script>
 (function () {
@@ -178,6 +211,9 @@
     function showToast(message, isSuccess) {
         const toast = document.createElement('div');
         toast.textContent = message;
+        const computed = getComputedStyle(document.body);
+        const bgSuccess = computed.getPropertyValue('--success').trim() || '#16a34a';
+        const bgError   = computed.getPropertyValue('--danger').trim() || '#dc2626';
         toast.style.cssText = [
             'position:fixed',
             'bottom:90px',
@@ -190,7 +226,7 @@
             'color:#fff',
             'box-shadow:0 8px 24px rgba(0,0,0,.15)',
             'animation:slideUp .3s ease',
-            'background:' + (isSuccess ? '#16a34a' : '#dc2626'),
+            'background:' + (isSuccess ? bgSuccess : bgError),
         ].join(';');
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 2500);

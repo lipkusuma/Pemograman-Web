@@ -80,8 +80,10 @@
 
 /* Section header */
 .ep-sh {
-    display: flex; align-items: center;
-    justify-content: space-between; margin-bottom: 18px;
+    display: flex; 
+    align-items: center;
+    justify-content: space-between; 
+    margin-bottom: 30px;
 }
 .ep-sh h4 { font-size: 1rem; font-weight: 700; color: var(--text-main); margin: 0; }
 .btn-et {
@@ -159,7 +161,7 @@
     border-radius: 14px; padding: 26px 22px;
     text-align: center; margin-bottom: 18px;
 }
-.ep-comp-card h4 { font-size: .98rem; font-weight: 700; color: var(--text-main); margin: 0 0 18px; }
+.ep-comp-card h4 { font-size: .98rem; font-weight: 700; color: var(--text-main); margin: 0 0 8px; }
 .ep-ring-wrap { position: relative; width: 128px; height: 128px; margin: 0 auto 20px; }
 .ep-ring-wrap svg { transform: rotate(-90deg); }
 .ep-ring-pct {
@@ -276,10 +278,10 @@
             </div>
         </div>
 
-        {{-- ─── PERSONAL INFO ────────────────────── --}}
+        {{-- ─── PERSONAL INFO & BIO ────────────────────── --}}
         <div class="ep-card">
             <div class="ep-sh">
-                <h4>Informasi Pribadi</h4>
+                <h4>Informasi Pribadi & Bio</h4>
                 <button class="btn-et" onclick="toggleSection('personal')">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                     Edit
@@ -288,7 +290,7 @@
 
             {{-- View mode --}}
             <div id="personal-view">
-                <div class="ep-ig">
+                <div class="ep-ig" style="margin-bottom: 20px;">
                     <div class="ep-ig-item">
                         <label>Nama Lengkap</label>
                         <span>{{ $user->name ?? '-' }}</span>
@@ -301,6 +303,14 @@
                         <label>No. Telepon</label>
                         <span>{{ $user->phone ?? '-' }}</span>
                     </div>
+                </div>
+                <div style="border-top: 1px solid var(--border-color, #e2e8f0); padding-top: 18px;">
+                    <label style="font-size: .78rem; color: var(--text-muted,#94a3b8); display: block; margin-bottom: 6px;">Bio</label>
+                    @if(!empty($user->bio))
+                        <p class="ep-bio-txt" style="margin: 0;">{{ $user->bio }}</p>
+                    @else
+                        <p class="ep-bio-empty" style="margin: 0;">Belum ada bio. Klik Edit untuk menambahkan deskripsi diri kamu.</p>
+                    @endif
                 </div>
             </div>
 
@@ -322,42 +332,13 @@
                             <input type="text" name="phone" value="{{ old('phone', $user->phone) }}" placeholder="08xxxxxxxxxx" required>
                         </div>
                     </div>
-                    <div style="display:flex;gap:10px;">
-                        <button type="submit" class="btn-save">Simpan Perubahan</button>
-                        <button type="button" class="btn-cancel" onclick="toggleSection('personal')">Batal</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        {{-- ─── BIO ─────────────────────────────── --}}
-        <div class="ep-card">
-            <div class="ep-sh">
-                <h4>Bio</h4>
-                <button class="btn-et" onclick="toggleSection('bio')">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                    Edit
-                </button>
-            </div>
-
-            <div id="bio-view">
-                @if(!empty($user->bio))
-                    <p class="ep-bio-txt">{{ $user->bio }}</p>
-                @else
-                    <p class="ep-bio-empty">Belum ada bio. Klik Edit untuk menambahkan deskripsi diri kamu.</p>
-                @endif
-            </div>
-
-            <div id="bio-edit" style="display:none;">
-                <form action="{{ route('profile.updateBio') }}" method="POST">
-                    @csrf
                     <div class="ep-f" style="margin-bottom:14px;">
-                        <label>Tulis sesuatu tentang dirimu</label>
+                        <label>Tulis sesuatu tentang dirimu (Bio)</label>
                         <textarea name="bio" placeholder="Halo! Saya adalah...">{{ old('bio', $user->bio) }}</textarea>
                     </div>
                     <div style="display:flex;gap:10px;">
-                        <button type="submit" class="btn-save">Simpan Bio</button>
-                        <button type="button" class="btn-cancel" onclick="toggleSection('bio')">Batal</button>
+                        <button type="submit" class="btn-save">Simpan Perubahan</button>
+                        <button type="button" class="btn-cancel" onclick="toggleSection('personal')">Batal</button>
                     </div>
                 </form>
             </div>
@@ -458,43 +439,6 @@
     {{-- RIGHT COLUMN --}}
     <div class="ep-right-panel">
 
-        {{-- Progress Ring --}}
-        <div class="ep-comp-card">
-            <h4>Lengkapi profilmu</h4>
-            <div class="ep-ring-wrap">
-                <svg width="128" height="128" viewBox="0 0 128 128">
-                    <circle cx="64" cy="64" r="52" fill="none" stroke="#e2e8f0" stroke-width="12"/>
-                    <circle cx="64" cy="64" r="52" fill="none"
-                        stroke="{{ $progressColor }}"
-                        stroke-width="12"
-                        stroke-linecap="round"
-                        stroke-dasharray="{{ $circumference }}"
-                        stroke-dashoffset="{{ $dashOffset }}"/>
-                </svg>
-                <div class="ep-ring-pct">{{ $totalPct }}%</div>
-            </div>
-
-            <ul class="ep-cl">
-                @foreach($completionItems as $item)
-                <li>
-                    <span class="ep-cl-l">
-                        @if($item['done'])
-                            <svg class="ep-ck-done" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                        @else
-                            <svg class="ep-ck-miss" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                        @endif
-                        {{ $item['label'] }}
-                    </span>
-                    @if($item['done'])
-                        <span class="ep-pd">{{ $item['pct'] }}%</span>
-                    @else
-                        <span class="ep-pm">+{{ $item['pct'] }}%</span>
-                    @endif
-                </li>
-                @endforeach
-            </ul>
-        </div>
-
         {{-- Account Info Card --}}
         <div class="ep-comp-card" style="text-align:left;">
             <h4 style="margin-bottom:14px;">Informasi Akun</h4>
@@ -526,6 +470,44 @@
                 </div>
                 @endif
             </div>
+        </div>
+
+        {{-- Progress card --}}
+
+        <div class="ep-comp-card">
+            <h4>Lengkapi profilmu</h4>
+            <div class="ep-ring-wrap">
+                <svg width="128" height="128" viewBox="0 0 128 128">
+                    <circle cx="64" cy="64" r="52" fill="none" stroke="#e2e8f0" stroke-width="12"/>
+                    <circle cx="64" cy="64" r="52" fill="none"
+                        stroke="{{ $progressColor }}"
+                        stroke-width="12"
+                        stroke-linecap="round"
+                        stroke-dasharray="{{ $circumference }}"
+                        stroke-dashoffset="{{ $dashOffset }}"/>
+                </svg>
+                <div class="ep-ring-pct">{{ $totalPct }}%</div>
+            </div>
+            
+            <ul class="ep-cl">
+                @foreach($completionItems as $item)
+                <li>
+                    <span class="ep-cl-l">
+                        @if($item['done'])
+                            <svg class="ep-ck-done" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        @else
+                            <svg class="ep-ck-miss" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        @endif
+                        {{ $item['label'] }}
+                    </span>
+                    @if($item['done'])
+                        <span class="ep-pd">{{ $item['pct'] }}%</span>
+                    @else
+                        <span class="ep-pm">+{{ $item['pct'] }}%</span>
+                    @endif
+                </li>
+                @endforeach
+            </ul>
         </div>
 
     </div>{{-- end right --}}
