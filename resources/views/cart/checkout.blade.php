@@ -38,18 +38,20 @@
             <!-- 1. Detail Barang -->
             <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
                 <h3 style="font-weight: 700; color: var(--text-main); font-size: 1.1rem; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                    <span>🎒</span> Barang yang Disewa
+                    Barang yang Disewa
                 </h3>
                 <div style="display: flex; flex-direction: column; gap: 16px;">
                     @foreach($cartItems as $item)
                         <div style="display: flex; align-items: center; gap: 16px; padding-bottom: 16px; border-bottom: 1px dashed var(--border-color); last-child: border-bottom: none;">
-                            <div style="display: flex; align-items: center; justify-content: center; font-size: 2rem; background-color: var(--input-bg); border-radius: 8px; width: 64px; height: 64px; flex-shrink: 0;">
-                                @if($item->product->category == 'Tenda') ⛺
-                                @elseif($item->product->category == 'Tas') 🎒
-                                @elseif($item->product->category == 'Alat Pribadi') 🥾
-                                @elseif($item->product->category == 'Alat Masak') 🍳
-                                @elseif($item->product->category == 'Penerangan') 💡
-                                @else 📦
+                            <div style="display: flex; align-items: center; justify-content: center; background-color: var(--input-bg); border-radius: 8px; width: 64px; height: 64px; flex-shrink: 0; overflow: hidden;">
+                                @if($item->product->image)
+                                    <img src="{{ asset('uploads/products/' . $item->product->image) }}" alt="{{ $item->product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                @else
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);">
+                                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                    </svg>
                                 @endif
                             </div>
                             <div style="flex: 1; min-width: 0;">
@@ -69,7 +71,7 @@
             <!-- 2. Tanggal Sewa -->
             <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
                 <h3 style="font-weight: 700; color: var(--text-main); font-size: 1.1rem; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                    <span>📅</span> Durasi Sewa
+                    Durasi Sewa
                 </h3>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                     <div>
@@ -89,7 +91,7 @@
             <!-- 3. Lokasi Pengambilan -->
             <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
                 <h3 style="font-weight: 700; color: var(--text-main); font-size: 1.1rem; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                    <span>📍</span> Lokasi Pengambilan
+                    Lokasi Pengambilan
                 </h3>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                     <textarea name="pickup_location" id="pickup_location" rows="3" required style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--input-bg); color: var(--text-main); font-size: 0.9rem; line-height: 1.5; resize: none;" placeholder="Masukkan alamat lengkap toko atau titik pengambilan...">{{ old('pickup_location', 'Jalan Sigura Gura II no. 8, Desa/Kelurahan Ketawanggede, Kecamatan Lowokwaru, Kota Malang, Jawa Timur 65145.') }}</textarea>
@@ -99,7 +101,7 @@
             <!-- 4. Rincian Pembayaran -->
             <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
                 <h3 style="font-weight: 700; color: var(--text-main); font-size: 1.1rem; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                    <span>💳</span> Rincian Pembayaran
+                    Rincian Pembayaran
                 </h3>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">

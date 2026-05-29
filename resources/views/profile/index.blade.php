@@ -419,7 +419,6 @@
                             <th>#</th>
                             <th>Foto</th>
                             <th>Nama</th>
-                            <th>Username</th>
                             <th>Email</th>
                             <th>Telepon</th>
                             <th>Bergabung</th>
@@ -439,7 +438,6 @@
                                 @endif
                             </td>
                             <td style="font-weight:600;">{{ $u->name }}</td>
-                            <td style="color:var(--text-muted);">@{{ $u->username }}</td>
                             <td>{{ $u->email }}</td>
                             <td>{{ $u->phone ?? '-' }}</td>
                             <td style="color:var(--text-muted);font-size:.8rem;">{{ $u->created_at->format('d M Y') }}</td>

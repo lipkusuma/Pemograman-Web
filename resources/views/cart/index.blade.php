@@ -67,13 +67,15 @@
                         </div>
 
                         {{-- Product Thumbnail --}}
-                        <div class="trx-img" style="display: flex; align-items: center; justify-content: center; font-size: 2.2rem; background-color: var(--input-bg); border-radius: 12px; width: 80px; height: 80px; flex-shrink: 0;">
-                            @if($cart->product->category == 'Tenda') ⛺
-                            @elseif($cart->product->category == 'Tas') 🎒
-                            @elseif($cart->product->category == 'Alat Pribadi') 🥾
-                            @elseif($cart->product->category == 'Alat Masak') 🍳
-                            @elseif($cart->product->category == 'Penerangan') 💡
-                            @else 📦
+                        <div class="trx-img" style="display: flex; align-items: center; justify-content: center; background-color: var(--input-bg); border-radius: 12px; width: 80px; height: 80px; flex-shrink: 0; overflow: hidden;">
+                            @if($cart->product->image)
+                                <img src="{{ asset('uploads/products/' . $cart->product->image) }}" alt="{{ $cart->product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            @else
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);">
+                                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                </svg>
                             @endif
                         </div>
 

@@ -51,17 +51,15 @@
             <div class="trx-card" data-status="{{ $trx->status }}" style="display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; padding: 24px; border: 1px solid var(--border-color);">
                 <div class="trx-left" style="display: flex; gap: 24px; align-items: center;">
                     <!-- Category Icon for first item -->
-                    <div class="trx-img" style="display: flex; align-items: center; justify-content: center; font-size: 2.2rem; background-color: var(--input-bg); border-radius: 12px; width: 90px; height: 90px; flex-shrink: 0;">
-                        @if($firstItem && $firstItem->product)
-                            @if($firstItem->product->category == 'Tenda') ⛺
-                            @elseif($firstItem->product->category == 'Tas') 🎒
-                            @elseif($firstItem->product->category == 'Alat Pribadi') 🥾
-                            @elseif($firstItem->product->category == 'Alat Masak') 🍳
-                            @elseif($firstItem->product->category == 'Penerangan') 💡
-                            @else 📦
-                            @endif
+                    <div class="trx-img" style="display: flex; align-items: center; justify-content: center; background-color: var(--input-bg); border-radius: 12px; width: 90px; height: 90px; flex-shrink: 0; overflow: hidden;">
+                        @if($firstItem && $firstItem->product && $firstItem->product->image)
+                            <img src="{{ asset('uploads/products/' . $firstItem->product->image) }}" alt="{{ $firstItem->product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
                         @else
-                            📦
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
                         @endif
                     </div>
                     <div class="trx-details" style="display: flex; flex-direction: column; gap: 4px;">
@@ -133,7 +131,7 @@
 
         <!-- Empty state placeholder for JS filtering -->
         <div id="filter-empty-placeholder" style="display: none; text-align: center; padding: 64px 24px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px;">
-            <div style="font-size: 4rem; margin-bottom: 16px;">🔍</div>
+            <!-- <div style="font-size: 4rem; margin-bottom: 16px;"><i class="fa-solid fa-house-circle-xmark"></i></div> -->
             <h3 style="font-weight: 700; color: var(--text-main); margin-bottom: 8px;">Transaksi tidak ditemukan</h3>
             <p style="color: var(--text-muted); margin-bottom: 0;">Tidak ada transaksi dengan status ini.</p>
         </div>

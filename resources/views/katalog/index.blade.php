@@ -246,7 +246,7 @@
 {{-- ── HERO BANNER ── --}}
 <div class="kl-banner">
     <div class="kl-banner-text">
-        <h2>Sewa Perlengkapan<br>Outdoor Terbaik 🏕️</h2>
+        <h2>Sewa Perlengkapan <br>Outdoor Terbaik</h2>
         <p>Lengkapi petualanganmu dengan peralatan berkualitas.<br>Tersedia berbagai pilihan tenda, tas, dan perlengkapan lainnya.</p>
     </div>
     <div class="kl-banner-badge">
@@ -258,29 +258,22 @@
 {{-- ── CATEGORIES ── --}}
 @php
     $categories = [
-        'Semua'       => '🗂️',
-        'Tenda'       => '⛺',
-        'Tas'         => '🎒',
-        'Alat Pribadi'=> '🥾',
-        'Alat Masak'  => '🍳',
-        'Penerangan'  => '💡',
+        'Semua',
+        'Tenda',
+        'Tas',
+        'Alat Pribadi',
+        'Alat Masak',
+        'Penerangan',
     ];
-    $emojiMap = [
-        'Tenda'       => '⛺',
-        'Tas'         => '🎒',
-        'Alat Pribadi'=> '🥾',
-        'Alat Masak'  => '🍳',
-        'Penerangan'  => '💡',
-    ];
+
 @endphp
 
 <div class="kl-section-hd">
     <h3>Kategori</h3>
 </div>
 <div class="kl-cats" id="klCats">
-    @foreach($categories as $cat => $emoji)
+    @foreach($categories as $cat)
     <button class="kl-cat {{ $cat === 'Semua' ? 'active' : '' }}" data-cat="{{ $cat }}">
-        <span class="kl-cat-emoji">{{ $emoji }}</span>
         {{ $cat }}
     </button>
     @endforeach
@@ -290,11 +283,11 @@
 <div class="kl-toolbar">
     <div class="kl-toolbar-left">
         <select class="kl-sort" id="klSort">
-            <option value="default">Urutkan: Default</option>
-            <option value="price_asc">Harga: Rendah ke Tinggi</option>
-            <option value="price_desc">Harga: Tinggi ke Rendah</option>
-            <option value="name_asc">Nama: A–Z</option>
-            <option value="stock_desc">Stok: Terbanyak</option>
+            <option value="default">Default</option>
+            <option value="price_asc">Harga : Rendah ke Tinggi</option>
+            <option value="price_desc">Harga : Tinggi ke Rendah</option>
+            <option value="name_asc">Nama : A–Z</option>
+            <option value="stock_desc">Stok : Terbanyak</option>
         </select>
     </div>
     <span class="kl-result-count" id="klCount">

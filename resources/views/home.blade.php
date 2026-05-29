@@ -139,7 +139,7 @@
 
     <!-- Background SVG Layer -->
     <div class="bg-layer">
-        <svg style="position: absolute; top: 0; right: 0; width: 600px; height: 100%;" preserveAspectRatio="none" viewBox="0 0 500 1000">
+        {{-- <svg style="position: absolute; top: 0; right: 0; width: 600px; height: 100%;" preserveAspectRatio="none" viewBox="0 0 500 1000">
             <path d="M500,0 L200,0 C150,150 300,300 200,500 C150,600 350,800 250,1000 L500,1000 Z" fill="#2563eb" opacity="0.8"/>
             <path d="M500,0 L300,0 C250,100 400,250 300,450 C250,550 450,750 350,1000 L500,1000 Z" fill="#38bdf8" opacity="0.5"/>
         </svg>
@@ -158,7 +158,7 @@
         </svg>
         <svg style="position: absolute; bottom: 0; left: 0; width: 400px; height: 300px;" preserveAspectRatio="none" viewBox="0 0 400 300">
             <path d="M0,300 L0,150 C50,150 100,250 200,200 C300,150 350,250 400,250 L400,300 Z" fill="#22d3ee" opacity="0.8"/>
-        </svg>
+        </svg> --}}
     </div>
 
     <!-- NAVBAR -->
@@ -192,12 +192,6 @@
                             <span class="nav-badge">New</span>
                         </a>
                     @endif
-                </li>
-                <li>
-                    <a href="#">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                        About
-                    </a>
                 </li>
             </ul>
         </div>
