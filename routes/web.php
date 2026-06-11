@@ -10,6 +10,7 @@ use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\SupportChatController;
 
 // Landing Page (publik)
 Route::get("/", [HomeController::class, "index"])->name("home");
@@ -56,6 +57,40 @@ Route::middleware("auth.check")->group(function () {
     Route::post("/payment/{transaction}", [CartController::class, "processPayment"])->name("cart.processPayment");
     Route::get("/payment-success/{transaction}", [CartController::class, "paymentSuccess"])->name("cart.paymentSuccess");
 
+// (moved) Interface testing endpoint declared below (outside auth middleware group)
+
+    // Support chat
+    Route::get('/support-chat', [SupportChatController::class, 'index'])->name('support.chat');
+    Route::post('/support-chat/message', [SupportChatController::class, 'send'])->name('support.chat.send');
+    Route::get('/support-chat/messages', [SupportChatController::class, 'messages'])->name('support.chat.messages');
+
+    // Admin support routes
+    Route::middleware('admin.check')->group(function () {
+        Route::get('/admin/support', [\App\Http\Controllers\AdminSupportController::class, 'index'])->name('admin.support.index');
+        Route::get('/admin/support/notifications', [\App\Http\Controllers\AdminSupportController::class, 'notifications'])->name('admin.support.notifications');
+        Route::get('/admin/support/sse', [\App\Http\Controllers\AdminSupportController::class, 'sseNotifications'])->name('admin.support.sse');
+        Route::get('/admin/support/chat/{id}', [\App\Http\Controllers\AdminSupportController::class, 'showChat'])->name('admin.support.chat');
+        Route::post('/admin/support/chat/{id}/reply', [\App\Http\Controllers\AdminSupportController::class, 'sendReply'])->name('admin.support.reply');
+    });
+
+// Debug route (DEV only) - shows session and support/admin routes
+if (env('APP_ENV') !== 'production') {
+    Route::get('/debug/session', [\App\Http\Controllers\DebugController::class, 'sessionInfo']);
+    Route::get('/debug/force-admin', [\App\Http\Controllers\DebugController::class, 'forceAdmin']);
+    Route::get('/debug/view-admin', function () {
+        $chats = \App\Models\Chat::with(['messages' => function ($q) { $q->latest()->limit(1); }])->get()->map(function ($c) {
+            $last = $c->messages()->with('user')->orderBy('created_at', 'desc')->first();
+            return [
+                'id' => $c->id,
+                'user_id' => $c->user_id,
+                'last_message' => $last ? $last->message : null,
+                'last_at' => $last ? $last->created_at->toDateTimeString() : null,
+            ];
+        });
+        return view('support.admin_index', compact('chats'));
+    });
+}
+
     // Route khusus Admin
     Route::middleware("admin.check")->group(function () {
         Route::get("/dashboard", [DashboardController::class, "index"])->name(
@@ -86,3 +121,10 @@ Route::middleware("auth.check")->group(function () {
         );
     });
 });
+
+// Interface testing endpoint (no auth required) - explicitly disable CSRF middleware for this route
+Route::post('/interface/checkout', [CartController::class, 'processCheckoutApi'])
+    ->withoutMiddleware([
+        \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+        \App\Http\Middleware\VerifyCsrfToken::class,
+    ]);

@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -273,6 +274,83 @@ class CartController extends Controller
         }
 
         return redirect()->route('cart.payment', $transaction->id);
+    }
+
+    /**
+     * API-friendly checkout for interface testing (no auth, no CSRF required when excluded)
+     * Expects JSON body with: user_id, pickup_location, items: [{product_id, qty, price?, duration_days?, start_date?, end_date?}, ...]
+     */
+    public function processCheckoutApi(Request $request)
+    {
+        $data = $request->all();
+
+        $userId = $data['user_id'] ?? null;
+        $pickupLocation = $data['pickup_location'] ?? null;
+        $items = $data['items'] ?? [];
+
+        if (empty($userId) || empty($items) || !is_array($items)) {
+            return response()->json(['success' => false, 'message' => 'Missing user_id or items'], 422);
+        }
+
+        // Validate that the provided user exists to satisfy FK constraint on transactions.user_id
+        $userExists = User::where('id', $userId)->exists();
+        if (! $userExists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found. Pastikan `user_id` mengacu pada user yang ada di database.'
+            ], 422);
+        }
+
+        // Calculate subtotal and create transaction
+        $subtotal = 0;
+        foreach ($items as $it) {
+            $qty = isset($it['qty']) ? (int)$it['qty'] : 1;
+            $price = isset($it['price']) ? (float)$it['price'] : 0;
+            $duration = isset($it['duration_days']) ? (int)$it['duration_days'] : 1;
+            $subtotal += $price * $qty * max(1, $duration);
+        }
+
+        $discount = $data['discount'] ?? 0;
+        $total = $subtotal - $discount;
+
+        $invoiceNumber = 'TRX-' . date('Ymd') . '-' . strtoupper(bin2hex(random_bytes(3)));
+
+        $transaction = Transaction::create([
+            'user_id' => $userId,
+            'invoice_number' => $invoiceNumber,
+            'status' => 'Menunggu Pembayaran',
+            'pickup_location' => $pickupLocation,
+            'subtotal' => $subtotal,
+            'discount' => $discount,
+            'total' => $total,
+        ]);
+
+        foreach ($items as $it) {
+            $qty = isset($it['qty']) ? (int) $it['qty'] : 1;
+            $price = isset($it['price']) ? (float) $it['price'] : 0;
+            $duration = isset($it['duration_days']) ? (int) $it['duration_days'] : 1;
+
+            // Ensure start/end dates are set (DB requires non-null dates)
+            $start_date = isset($it['start_date']) && !empty($it['start_date']) ? $it['start_date'] : Carbon::today()->toDateString();
+            $end_date = isset($it['end_date']) && !empty($it['end_date']) ? $it['end_date'] : Carbon::parse($start_date)->addDays($duration)->toDateString();
+
+            TransactionItem::create([
+                'transaction_id' => $transaction->id,
+                'product_id' => isset($it['product_id']) ? (int) $it['product_id'] : null,
+                'qty' => $qty,
+                'price' => $price,
+                'duration_days' => $duration,
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'transaction_id' => $transaction->id,
+            'invoice_number' => $invoiceNumber,
+            'total' => $total,
+        ], 201);
     }
 
     /** Display payment method selection page */
